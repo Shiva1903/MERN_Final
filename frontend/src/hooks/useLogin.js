@@ -1,33 +1,32 @@
-
-import { useState } from "react"
-import { useAuthContext } from "./useAuthContext"
+import { useState } from "react";
+import { useAuthContext } from "./useAuthContext";
 
 export function useLogin() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
-  const { dispatch } = useAuthContext()
+  const { dispatch } = useAuthContext();
 
   const login = async (username, password) => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
-    const response = await fetch("/api/user/login", {
+    const response = await fetch("https://mern-app-backend-xvut.onrender.com/api/user/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
-    })
+    });
 
-    const result = await response.json()
+    const result = await response.json();
     
     if (!response.ok) {
-      setIsLoading(false)
-      setError(result.error)
+      setIsLoading(false);
+      setError(result.error);
     } else {
-      localStorage.setItem("user", JSON.stringify(result))
-      dispatch({ type: "LOGIN", payload: result })
-      setIsLoading(false)
+      localStorage.setItem("user", JSON.stringify(result));
+      dispatch({ type: "LOGIN", payload: result });
+      setIsLoading(false);
     }
-  }
+  };
 
-  return { login, isLoading, error }
+  return { login, isLoading, error };
 }

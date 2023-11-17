@@ -1,22 +1,22 @@
-import React, { useEffect } from "react"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { useAuthContext } from "./hooks/useAuthContext"
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuthContext } from "./hooks/useAuthContext";
 
-import Layout from "./Layout"
-import Home from "./pages/Home"
-import Login from "./pages/Login"
-import Signup from "./pages/Signup"
-import Exercises from "./pages/Exercises"
-import Goals from "./pages/Goals"
+import Layout from "./Layout";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Exercises from "./pages/Exercises";
+import Goals from "./pages/Goals";
 
 function App() {
   const { user, isLoaded } = useAuthContext();
   let token;
 
   if (!isLoaded) {
-    token = JSON.parse(localStorage.getItem("user"))
+    token = JSON.parse(localStorage.getItem("user"));
   } else {
-    token = null
+    token = null;
   }
 
   return (

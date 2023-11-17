@@ -1,95 +1,95 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react';
 import { useWorkoutContext } from '../hooks/useWorkoutContext';
 import { useAuthContext } from '../hooks/useAuthContext';
-import Dot from "./Dot"
+import Dot from "./Dot";
 import TimeInput from './TimeInput';
 
 export default function EditableWorkoutRow({ workout, setError }) {
   const [isEdit, setIsEdit] = useState(false);
-  const [name, setName] = useState(workout.exercise[0].name)
+  const [name, setName] = useState(workout.exercise[0].name);
   const [time, setTime] = useState(workout.time);
-  const { dispatch } = useWorkoutContext()
-  const { user } = useAuthContext()
+  const { dispatch } = useWorkoutContext();
+  const { user } = useAuthContext();
 
-  const editRef = useRef()
-  const formRef = useRef()
+  const editRef = useRef();
+  const formRef = useRef();
 
   const handleChangeName = (e) => {
-    setName(e.target.value)
-  }
+    setName(e.target.value);
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const fetchData = async () => {
       if (!name || !time) {
-        setError("Fields must not be empty")
-        return
+        setError("Fields must not be empty");
+        return;
       }
 
-      const response = await fetch("/api/workout/" + workout._id, {
+      const response = await fetch("https://mern-app-backend-xvut.onrender.com/api/workout/" + workout._id, {
         method: "PATCH",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${user.token}`
-          },
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${user.token}`
+        },
         body: JSON.stringify({ name, time, exerciseID: workout.exercise[0]._id })
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        dispatch({ type: "UPDATE_WORKOUT", payload: result })
-        setIsEdit(false)
+        dispatch({ type: "UPDATE_WORKOUT", payload: result });
+        setIsEdit(false);
       }
-    }
+    };
 
-    fetchData()
-  } 
+    fetchData();
+  };
 
   const handleClickEdit = () => {
-    setIsEdit(true)
-  }
+    setIsEdit(true);
+  };
 
   const handleClickClose = () => {
-    setIsEdit(false)
-  }
+    setIsEdit(false);
+  };
 
   const handleClickDelete = () => {
-    fetch("/api/workout/" + workout._id, {
+    fetch("https://mern-app-backend-xvut.onrender.com/api/workout/" + workout._id, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
     })
-    .catch(e => console.log(e))
+    .catch(e => console.log(e));
 
-    dispatch({ type: "DELETE_WORKOUT", payload: workout })
-  }
+    dispatch({ type: "DELETE_WORKOUT", payload: workout });
+  };
 
   const handleClickOutside = (e) => {
     if (formRef.current && !editRef.current.contains(e.target) && !formRef.current.contains(e.target)) {
-      setIsEdit(false)
+      setIsEdit(false);
     }
-  }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSubmit(e)
+      handleSubmit(e);
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside)
-    return () => {document.removeEventListener('click', handleClickOutside)}
-  }, [])
+    document.addEventListener('click', handleClickOutside);
+    return () => {document.removeEventListener('click', handleClickOutside);};
+  }, []);
 
   const getDate = (dateString) => {
-    const date = new Date(dateString)
-    return date
-  }
+    const date = new Date(dateString);
+    return date;
+  };
 
   const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
 
@@ -137,5 +137,5 @@ export default function EditableWorkoutRow({ workout, setError }) {
         <button onClick={handleClickDelete}><span className="material-symbols-outlined">delete</span></button>
       </td>
     </tr>
-  )
+  );
 }
