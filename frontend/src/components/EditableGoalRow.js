@@ -6,7 +6,6 @@ import { useWorkoutContext } from '../hooks/useWorkoutContext';
 import { useGetWeekDates } from '../hooks/useGetWeekDates';
 import ExerciseSelect from './ExerciseSelect';
 import TimeInput from './TimeInput';
-
 import Dot from "./Dot";
 
 const goalTypeOptions = [
@@ -31,7 +30,7 @@ export default function EditableGoalRow({ goal, setError, exercises }) {
   const { user } = useAuthContext();
   const { dispatch: dispatchGoal } = useGoalContext();
   const { dispatch: dispatchWorkout, workouts } = useWorkoutContext();
-  const getWeekDates = useGetWeekDates();
+  const getWeekDates =  useGetWeekDates();
 
   const editRef = useRef();
   const formRef = useRef();
@@ -82,7 +81,7 @@ export default function EditableGoalRow({ goal, setError, exercises }) {
     };
 
     fetchData();
-  };
+  }; 
 
   const handleChangeExercise = (e) => {
     setExercise(e.value);
@@ -129,7 +128,7 @@ export default function EditableGoalRow({ goal, setError, exercises }) {
         workoutTotalFrequency++;
       }
     });
-
+    
     if (goalType === "time") {
       return workoutTotalTime;
     } else {
@@ -146,7 +145,7 @@ export default function EditableGoalRow({ goal, setError, exercises }) {
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
-    return () => {document.removeEventListener('click', handleClickOutside);};
+    return () => {document.removeEventListener('click', handleClickOutside);}
   }, []);
 
   const handleChangeGoalType = (e) => {
@@ -230,4 +229,38 @@ export default function EditableGoalRow({ goal, setError, exercises }) {
             </form>
           : <span>{goal.goal_type === "time" ? `${goal.time} minutes` : `${goal.frequency} times`}</span>
         }
-      </
+      </td>
+      
+      <td>
+        <form className='editable-form editable-form-last' onSubmit={handleSubmit}>
+          {
+            <span className={remaining <= 0 ? "success" : "danger"}> 
+              {remaining} {goalType === "time" ? remaining === 1 ? "minute" : "minutes" : remaining === 1 ? "time" : "times"}
+            </span>
+          }
+          {
+            isEdit
+            ? <button className='editable-form-btn'>Save</button>
+            : null
+          }
+          
+        </form>
+      </td>
+
+      <td className='options'>
+        <span>
+          <button onClick={isEdit ? handleClickClose : handleClickEdit}>
+            <span className="material-symbols-outlined" ref={editRef}>
+              {
+                isEdit
+                ? "close"
+                : "edit"
+              }
+            </span>
+          </button>
+          <button onClick={handleClickDelete}><span className="material-symbols-outlined">delete</span></button>
+        </span>
+      </td>
+    </tr>
+  );
+}
