@@ -1,5 +1,5 @@
 {
-  "proxy": "https://mern-app-backend-xvut.onrender.com",
+  "proxy": "http://localhost:3001/",
   "name": "frontend",
   "version": "0.1.0",
   "private": true,

@@ -1,48 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import ExerciseSelect from '../components/ExerciseSelect';
-import Select from 'react-select';
-import TimeInput from '../components/TimeInput';
+import React, { useState, useEffect } from 'react'
+import ExerciseSelect from '../components/ExerciseSelect'
+import Select from 'react-select'
+import TimeInput from '../components/TimeInput'
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useGoalContext } from '../hooks/useGoalContext';
-import GoalsTable from '../components/GoalsTable';
-
-const backendUrl = "https://mern-app-backend-xvut.onrender.com";
+import { useAuthContext } from '../hooks/useAuthContext'
+import { useGoalContext } from '../hooks/useGoalContext'
+import GoalsTable from '../components/GoalsTable'
 
 export default function Goals() {
-  const { user, isLoaded } = useAuthContext();
-  const { goals, dispatch } = useGoalContext();
+  const { user, isLoaded } = useAuthContext()
+  const { goals, dispatch } = useGoalContext()
 
-  const [goalType, setGoalType] = useState(null);
-  const [time, setTime] = useState(0);
-  const [frequency, setFrequency] = useState(0);
-  const [exercises, setExercises] = useState(null);
-  const [exercise, setExercise] = useState(null);
-  const [error, setError] = useState(null);
+  const [goalType, setGoalType] = useState(null)
+  const [time, setTime] = useState(0)
+  const [frequency, setFrequency] = useState(0)
+  const [exercises, setExercises] = useState(null)
+  const [exercise, setExercise] = useState(null)  
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (isLoaded) {
-      fetch(`${backendUrl}/api/exercise`, {
+      fetch("/api/exercise", {
         headers: {
           "Authorization": `Bearer ${user.token}`
         }
       })
       .then((response) => response.json())
       .then((result) => {
-        setExercises(result);
-      });
+        setExercises(result)
+      })
 
-      fetch(`${backendUrl}/api/goals`, {
+      fetch("/api/goals", {
         headers: {
           "Authorization": `Bearer ${user.token}`
         }
       })
       .then((response) => response.json())
       .then((result) => {
-        dispatch({ type: "SET_GOALS", payload: result });
-      });
+        dispatch({ type: "SET_GOALS", payload: result })
+      })
     }
-  }, [user, isLoaded, dispatch]);
+  }, [user, isLoaded, dispatch])
 
   const goalTypeOptions = [
     {
@@ -53,35 +51,35 @@ export default function Goals() {
       label: "Time",
       value: "time"
     }
-  ];
+  ]
   
   const handleChangeExercise = (e) => {
-    setExercise(e.value);
-  };
+    setExercise(e.value)
+  }
 
   const handleChangeGoalType = (e) => {
-    setGoalType(e.value);
-  };
+    setGoalType(e.value)
+  }
   const handleChangeFrequency = (e) => {
-    setFrequency(e.target.value);
-  };
+    setFrequency(e.target.value)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
     if (!exercise || !goalType || (!time && !frequency)) {
-      setError("Fields must not be empty");
-      return;
+      setError("Fields must not be empty")
+      return
     }
 
     if (goalType === "time") {
-      setFrequency(null);
+      setFrequency(null)
     } else {
-      setTime(0);
+      setTime(0)
     }
 
-    const response = await fetch(`${backendUrl}/api/goals`, {
+    const response = await fetch("/api/goals", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${user.token}`,
@@ -95,21 +93,21 @@ export default function Goals() {
       })
     })
     .catch((err) => {
-      console.log(err);
-    });
+      console.log(err)
+    })
 
-    const result = await response.json();
+    const result = await response.json()
 
     if (!response.ok) {
-      console.log(result.error);
-      setError(result.error);
+      console.log(result.error)
+      setError(result.error)
     }
     if (response.ok) {
-      dispatch({ type: "CREATE_GOAL", payload: result });
-      console.log(result);
-      e.target.reset();
+      dispatch({ type: "CREATE_GOAL", payload: result })
+      console.log(result)
+      e.target.reset()
     }
-  };
+  }
 
   return (
     <div className='container goals-container'>
@@ -161,5 +159,5 @@ export default function Goals() {
         exercises={exercises}
       />
     </div>
-  );
+  )
 }

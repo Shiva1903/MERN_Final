@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import Popup from './Popup';
 import { useWorkoutContext } from '../hooks/useWorkoutContext';
 import { useAuthContext } from '../hooks/useAuthContext';
@@ -6,24 +6,24 @@ import EditableWorkoutRow from './EditableWorkoutRow';
 
 export default function WorkoutsTable() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { workouts, dispatch } = useWorkoutContext();
-  const { user } = useAuthContext();
+  const { workouts, dispatch } = useWorkoutContext()
+  const { user } = useAuthContext()
  
   useEffect(() => {
-    fetch("https://mern-app-backend-xvut.onrender.com/api/workout", {
+    fetch("/api/workout", {
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
     })
     .then((response) => response.json())
     .then((result) => {
-      dispatch({ type: "SET_WORKOUTS", payload: result });
-    });
-  }, [dispatch, user.token]);
+      dispatch({ type: "SET_WORKOUTS", payload: result })
+    })
+  }, [dispatch, user.token])
 
   const handleClickAddExercise = () => {
-    setIsPopupOpen(true);
-  };
+    setIsPopupOpen(true)
+  }
 
   return (
     <div className='table'>
@@ -56,11 +56,11 @@ export default function WorkoutsTable() {
                   key={workout._id}
                   workout={workout}
                 />
-              );
+              )
             })
           }
         </tbody>
       </table>
     </div>
-  );
+  )
 }

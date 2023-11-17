@@ -1,70 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import ExerciseSelect from './ExerciseSelect';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useWorkoutContext } from '../hooks/useWorkoutContext';
-import TimeInput from './TimeInput';
+import React, { useState, useEffect } from 'react'
+import ExerciseSelect from './ExerciseSelect'
+import { useAuthContext } from '../hooks/useAuthContext'
+import { useWorkoutContext } from '../hooks/useWorkoutContext'
+import TimeInput from './TimeInput'
 
 export default function Popup({ setIsPopupOpen }) {
-  const [time, setTime] = useState("");
-  const [exercises, setExercises] = useState([]);
-  const [exercise, setExercise] = useState(null);
-  const [error, setError] = useState(null);
+  const [time, setTime] = useState("")
+  const [exercises, setExercises] = useState([])
+  const [exercise, setExercise] = useState(null)
+  const [error, setError] = useState(null)
 
-  const { user } = useAuthContext();
-  const { dispatch } = useWorkoutContext();
+  const { user } = useAuthContext()
+  const { dispatch } = useWorkoutContext()
 
   useEffect(() => {
-    fetch("https://mern-app-backend-xvut.onrender.com/api/exercise", {
+    fetch("/api/exercise", {
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
     })
     .then((response) => response.json())
     .then((result) => {
-      setExercises(result);
-    });
-  }, [user.token]);
+      setExercises(result)
+    })
+  }, [user.token])
   
   const options = exercises.map(exercise => {
     return {
       label: exercise.name,
       value: exercise._id
-    };
-  });
+    }
+  })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
     if (!exercise || !time) {
-      setError("Fields must not be empty");
-      return;
+      setError("Fields must not be empty")
+      return
     }
 
-    const response = await fetch("https://mern-app-backend-xvut.onrender.com/api/workout", {
+    const response = await fetch("/api/workout", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${user.token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ exercise, time })
-    });
+    })
 
-    const result = await response.json();
+    const result = await response.json()
 
     if (!response.ok) {
-      console.log(result.error);
-      setError(result.error);
+      console.log(result.error)
+      setError(result.error)
     }
     if (response.ok) {
-      dispatch({ type: "CREATE_WORKOUT", payload: result });
-      setIsPopupOpen(false);
+      dispatch({ type: "CREATE_WORKOUT", payload: result })
+      setIsPopupOpen(false)
     }
-  };
+  }
 
   const handleChangeExercise = (e) => {
-    setExercise(e.value);
-  };
+    setExercise(e.value)
+  }
   
   return (
     <div className='popup'>
@@ -87,5 +87,5 @@ export default function Popup({ setIsPopupOpen }) {
         <button>Add</button>
       </form>
     </div>
-  );
+  )
 }
