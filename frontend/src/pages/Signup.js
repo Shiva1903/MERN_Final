@@ -1,47 +1,51 @@
-import React, { useState } from 'react'
-import { useSignup } from '../hooks/useSignup'
+import React, { useState } from 'react';
+import { useSignup } from '../hooks/useSignup';
+
+const backendUrl = "https://mern-app-backend-xvut.onrender.com";
 
 export default function Signup() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const { signup, isLoading, error } = useSignup()
+  const { signup, isLoading, error } = useSignup(backendUrl);
 
   const handleClick = async (e) => {
-    await signup(username, password)
-  }
+    await signup(username, password);
+  };
 
   return (
-    <div className='container'>
-      <form className='signup'>
+    <div className="container">
+      <form className="signup">
         <h1>Register a new account</h1>
 
-        <div className='form-group'>
-          <label htmlFor='username'>Username: </label>
-          <input 
-            id='username'
+        <div className="form-group">
+          <label htmlFor="username">Username: </label>
+          <input
+            id="username"
             type="text"
-            onChange={ (e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
             value={username}
             autoComplete="off"
             autoFocus="on"
           />
         </div>
-        
-        <div className='form-group'>
-          <label htmlFor='password'>Password: </label>
-          <input 
-            id='password'
+
+        <div className="form-group">
+          <label htmlFor="password">Password: </label>
+          <input
+            id="password"
             type="password"
-            onChange={ (e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             value={password}
             autoComplete="off"
           />
         </div>
 
-        <button onClick={handleClick} disabled={isLoading}>Sign Up</button>
-        { error && <div className='error'>{ error }</div> }
+        <button onClick={handleClick} disabled={isLoading}>
+          Sign Up
+        </button>
+        {error && <div className="error">{error}</div>}
       </form>
     </div>
-  )
+  );
 }
