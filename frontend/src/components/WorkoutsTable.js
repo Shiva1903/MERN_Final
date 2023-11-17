@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+// WorkoutsTable.js
+
+import React, { useState, useEffect } from 'react';
 import Popup from './Popup';
 import { useWorkoutContext } from '../hooks/useWorkoutContext';
 import { useAuthContext } from '../hooks/useAuthContext';
@@ -6,37 +8,35 @@ import EditableWorkoutRow from './EditableWorkoutRow';
 
 export default function WorkoutsTable() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { workouts, dispatch } = useWorkoutContext()
-  const { user } = useAuthContext()
- 
+  const { workouts, dispatch } = useWorkoutContext();
+  const { user } = useAuthContext();
+
   useEffect(() => {
-    fetch("/api/workout", {
+    fetch('https://backend-l1of.onrender.com/api/workout', {
       headers: {
-        "Authorization": `Bearer ${user.token}`
-      }
+        Authorization: `Bearer ${user.token}`,
+      },
     })
-    .then((response) => response.json())
-    .then((result) => {
-      dispatch({ type: "SET_WORKOUTS", payload: result })
-    })
-  }, [dispatch, user.token])
+      .then((response) => response.json())
+      .then((result) => {
+        dispatch({ type: 'SET_WORKOUTS', payload: result });
+      });
+  }, [dispatch, user.token]);
 
   const handleClickAddExercise = () => {
-    setIsPopupOpen(true)
-  }
+    setIsPopupOpen(true);
+  };
 
   return (
-    <div className='table'>
-      <div className='table-header'>
+    <div className="table">
+      <div className="table-header">
         <h2>Log</h2>
-        <div className='button-wrapper'>
-          <button onClick={handleClickAddExercise}> 
-            <span className="material-symbols-outlined material-icon">
-                add_circle
-            </span>
+        <div className="button-wrapper">
+          <button onClick={handleClickAddExercise}>
+            <span className="material-symbols-outlined material-icon">add_circle</span>
             Add Workout
           </button>
-          { isPopupOpen ? <Popup setIsPopupOpen={setIsPopupOpen}/> : null }
+          {isPopupOpen ? <Popup setIsPopupOpen={setIsPopupOpen} /> : null}
         </div>
       </div>
       <table>
@@ -49,18 +49,11 @@ export default function WorkoutsTable() {
           </tr>
         </thead>
         <tbody>
-          {
-            workouts.map((workout) => {
-              return (
-                <EditableWorkoutRow 
-                  key={workout._id}
-                  workout={workout}
-                />
-              )
-            })
-          }
+          {workouts.map((workout) => {
+            return <EditableWorkoutRow key={workout._id} workout={workout} />;
+          })}
         </tbody>
       </table>
     </div>
-  )
+  );
 }

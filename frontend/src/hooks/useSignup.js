@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { useAuthContext } from "./useAuthContext";
+// useSignup.js
+
+import { useState } from 'react';
+import { useAuthContext } from './useAuthContext';
 
 export function useSignup() {
   const [error, setError] = useState(null);
@@ -10,10 +12,10 @@ export function useSignup() {
     setIsLoading(true);
     setError(null);
 
-    const response = await fetch("/api/user/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+    const response = await fetch('https://backend-l1of.onrender.com/api/user/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
     });
 
     const result = await response.json();
@@ -21,8 +23,8 @@ export function useSignup() {
       setIsLoading(false);
       setError(result.error);
     } else {
-      localStorage.setItem("user", JSON.stringify(result));
-      dispatch({ type: "LOGIN", payload: result });
+      localStorage.setItem('user', JSON.stringify(result));
+      dispatch({ type: 'LOGIN', payload: result });
       setIsLoading(false);
     }
   };

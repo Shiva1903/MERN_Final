@@ -1,151 +1,155 @@
-import React, { useState, useRef, useEffect } from 'react'
+// EditableExerciseRow.js
+
+import React, { useState, useRef, useEffect } from 'react';
 import { useExerciseContext } from '../hooks/useExerciseContext';
 import { useAuthContext } from '../hooks/useAuthContext';
 import ColorSelect from './ColorSelect';
-import Dot from "./Dot"
+import Dot from './Dot';
 
 export default function EditableExerciseRow({ exercise, setError }) {
   const [isEdit, setIsEdit] = useState(false);
-  const [name, setName] = useState(exercise.name)
+  const [name, setName] = useState(exercise.name);
   const [color, setColor] = useState(exercise.color);
-  const { dispatch } = useExerciseContext()
-  const { user } = useAuthContext()
+  const { dispatch } = useExerciseContext();
+  const { user } = useAuthContext();
 
-  const editRef = useRef()
-  const formRef = useRef()
+  const editRef = useRef();
+  const formRef = useRef();
 
   const handleChange = (e) => {
-    setName(e.target.value)
-    console.log(name)
-  }
+    setName(e.target.value);
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setError(null)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-    const fetchData = async () => {
+    try {
       if (!name || !color) {
-        setError("Fields must not be empty")
-        return
+        setError('Fields must not be empty');
+        return;
       }
 
-      const response = await fetch("/api/exercise/" + exercise._id, {
-        method: "PATCH",
+      const response = await fetch(`https://backend-l1of.onrender.com/api/exercise/${exercise._id}`, {
+        method: 'PATCH',
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${user.token}`
-          },
-        body: JSON.stringify({ name, color })
-      })
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ name, color }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        console.log(result)
-        dispatch({ type: "UPDATE_EXERCISE", payload: result })
-        setIsEdit(false)
+        console.log(result);
+        dispatch({ type: 'UPDATE_EXERCISE', payload: result });
+        setIsEdit(false);
       }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An error occurred while updating the exercise.');
     }
-
-    fetchData()
-  } 
+  };
 
   const handleClickEdit = () => {
-    setIsEdit(true)
-  }
+    setIsEdit(true);
+  };
 
   const handleClickClose = () => {
-    setIsEdit(false)
-  }
+    setIsEdit(false);
+  };
 
   const handleClickDelete = () => {
-    fetch("/api/exercise/" + exercise._id, {
-      method: "DELETE",
+    fetch(`https://backend-l1of.onrender.com/api/exercise/${exercise._id}`, {
+      method: 'DELETE',
       headers: {
-        "Authorization": `Bearer ${user.token}`
-      }
+        Authorization: `Bearer ${user.token}`,
+      },
     })
-    .then((response) => {
-      if (!response.ok) {
-        response.json().then((result) => { setError(result.error) })
-      } else {
-        dispatch({ type: "DELETE_EXERCISE", payload: exercise })
-      }
-    })
-    .catch(e => console.log(e))
-
-    
-  }
+      .then((response) => {
+        if (!response.ok) {
+          response.json().then((result) => {
+            setError(result.error);
+          });
+        } else {
+          dispatch({ type: 'DELETE_EXERCISE', payload: exercise });
+        }
+      })
+      .catch((e) => console.log(e));
+  };
 
   const handleClickOutside = (e) => {
-    const clickInMenu = e.target.id ? e.target.id.includes("react-select") : null
+    const clickInMenu = e.target.id ? e.target.id.includes('react-select') : null;
     if (formRef.current && !editRef.current.contains(e.target) && !formRef.current.contains(e.target) && !clickInMenu) {
-      setIsEdit(false)
+      setIsEdit(false);
     }
-  }
+  };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       if (!name) {
-        return
+        return;
       }
-      fetch("/api/exercise/" + exercise._id, {
-        method: "PATCH",
+      fetch(`https://backend-l1of.onrender.com/api/exercise/${exercise._id}`, {
+        method: 'PATCH',
         headers: {
-          "Authorization": `Bearer ${user.token}`
+          Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify({
           name,
-          color
-        })
-      })
+          color,
+        }),
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside)
-    return () => {document.removeEventListener('click', handleClickOutside)}
-  }, [])
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <tr>
       <td>
-        {
-          isEdit
-          ? <form ref={formRef} className='editable-form' onSubmit={handleSubmit}>
-              <input 
-                className="editable-input" 
-                value={name} 
-                onChange={handleChange} 
-                autoFocus 
-                onKeyDown={handleKeyDown}
-              />
-              <ColorSelect 
-                setColor={setColor}
-                className={"editable-input-select"}
-                initialValue={exercise.color}
-              />
-              <button className='editable-form-btn'>Save Changes</button>
-            </form>
-          : <span className='dot'>{exercise.name} <Dot color={exercise.color} /> </span>
-        }
+        {isEdit ? (
+          <form ref={formRef} className="editable-form" onSubmit={handleSubmit}>
+            <input
+              className="editable-input"
+              value={name}
+              onChange={handleChange}
+              autoFocus
+              onKeyDown={handleKeyDown}
+            />
+            <ColorSelect
+              setColor={setColor}
+              className={'editable-input-select'}
+              initialValue={exercise.color}
+            />
+            <button className="editable-form-btn">Save Changes</button>
+          </form>
+        ) : (
+          <span className="dot">
+            {exercise.name} <Dot color={exercise.color} />
+          </span>
+        )}
       </td>
-      <td className='options'>
+      <td className="options">
         <span>
           <button onClick={isEdit ? handleClickClose : handleClickEdit}>
             <span className="material-symbols-outlined" ref={editRef}>
-              {
-                isEdit
-                ? "close"
-                : "edit"
-              }
+              {isEdit ? 'close' : 'edit'}
             </span>
           </button>
-          <button onClick={handleClickDelete}><span className="material-symbols-outlined">delete</span></button>
+          <button onClick={handleClickDelete}>
+            <span className="material-symbols-outlined">delete</span>
+          </button>
         </span>
       </td>
     </tr>
-  )
+  );
 }
